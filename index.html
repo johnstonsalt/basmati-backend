@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+    <head>
+        <title>BASMAAAATI BASMATI RICE</title>
+        
+        <style>
+            body, html { padding: 0; margin: 0; background: whitesmoke; color: #404040; font-family: sans-serif; }
+        </style>
+    </head>
+
+    <body>
+        <br />
+        <br />
+        <div style="text-align: center; font-size: 2em;">
+            <div>current IP is:</div>
+            <div id="ipdiv" style="font-size: 2.7em; font-weight: bold;"></div>
+            
+            <br />
+
+            <div id="countdiv">loading...</div>
+            <div id="listdiv" style="font-size: 2em; font-weight: bold;"></div>
+        </div>
+
+        <script>
+            async function doTheShit() {
+                var ipres = await fetch("https://raw.githubusercontent.com/johnstonalt/ip-updates/refs/heads/main/README.md", { cache: "no-store" } );
+                var ip = await ipres.text();
+                ip = ip.replace("# ", "");
+                console.log(ip);
+                var ipdiv = document.querySelector("#ipdiv");
+                ipdiv.innerText = ip;
+
+                // mc data
+                var mcres = await fetch(`http://${ip}:3000/players`, { cache: "no-store" });
+                var mcdata = await mcres.json();
+
+                var countdiv = document.querySelector("#countdiv");
+                var listdiv = document.querySelector("#listdiv");
+
+                if (mcdata["error"]) {
+                    countdiv.innerHTML = "<b style='color: #e03731;'>server is either offline, or IP needs to update</b><br />call John if server is on, and IP doesn't update within 5 minutes!";
+                } else {
+                    countdiv.innerText = `there are ${mcdata["players"]["online"]} players online:`;
+
+                    var players = [];
+                    listdiv.innerText = "";
+
+                    for (var i = 0; i < mcdata["players"]["online"]; i++) {
+                        var player = mcdata["players"]["sample"][i]["name"];
+                        players.push(player);
+                    }
+
+                    players.sort();
+
+                    for (var i = 0; i < players.length; i++) {
+                        listdiv.innerText += players[i] + "\n";
+                    }
+                }
+            }
+   
+            doTheShit();
+        </script>
+    </body>
+</html>
