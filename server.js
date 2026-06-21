@@ -14,10 +14,16 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.get("/style.css", (req, res) => {
+    res.sendFile(path.join(__dirname, "style.css"));
+});
+
 app.get("/ok", (req, res) => { res.send("ok"); });
 
 const mcsip = "127.0.0.1"
 const mcsport = 25565
+const serverDir = "/home/john/basmati";
+const usercache = JSON.parse(fs.readFileSync(`${serverDir}/usercache.json`, "utf8"));
 
 app.get("/api/players", (req, res) => {
     console.log(`request to '/api/players' from ${req.ip}`)
@@ -35,9 +41,6 @@ app.get("/stats", (req, res) => {
 });
 app.get("/api/stats", (req, res) => {
     console.log(`request to 'api/stats' from ${req.ip}`);
-
-    const serverDir = "/home/john/basmati";
-    const usercache = JSON.parse(fs.readFileSync(`${serverDir}/usercache.json`, "utf8"));
 
     var retval = [];
     fs.readdirSync(`${serverDir}/world/players/stats/`).forEach((f) => {
@@ -112,6 +115,29 @@ app.get("/api/stats", (req, res) => {
     });    
 
     res.json(retval);
+});
+
+// full stats
+app.get("/fullstats/:username", (req, res) => {
+    console.log(`request to 'fullstats/${req.params.username}' from ${req.ip}`);
+    res.sendFile(path.join(__dirname, "fullstats.html"));
+});
+app.get("/api/fullstats/:username", (req, res) => {
+    console.log(`request to 'api/fullstats/${req.params.username}' from ${req.ip}`);
+
+    var username = String(req.params.username).toLocaleLowerCase();
+    var uuid;
+
+    for (var i = 0; i < usercache.length; i++) {
+        if (usercache[i]["name"].toLocaleLowerCase() == username)
+            uuid = usercache[i]["uuid"];
+    }
+
+    if (!uuid) res.status(404).send("no player");
+
+    var fpath = `${serverDir}/world/players/stats/${uuid}.json`; 
+    var data = JSON.parse(fs.readFileSync(fpath, "utf8"));
+    res.json(data); 
 });
 
 app.listen(port, "0.0.0.0", () => {

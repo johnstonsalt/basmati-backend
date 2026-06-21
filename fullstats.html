@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+    <head>
+        <title>fullstats</title>
+        <link rel="stylesheet" href="/style.css" />    
+    </head>
+
+    <br /> 
+    <br /> 
+
+    <div style="width: 80%; margin: auto;">
+        <div id="title" style="text-align: left; font-weight: bold;">loading...</div>
+        <div id="fullstats"></div>
+    </div>
+
+    <script>
+        async function getData() {
+            var url = new URL(window.location.href);
+            var sx = url.pathname.split("/").filter(Boolean);
+            var username = sx.at(-1).toLocaleLowerCase();
+            var title = document.querySelector("#title");
+            title.innerText = `${username}`;
+
+            var req = await fetch(`/api/fullstats/${username}`);
+            var data = await req.json();
+            console.log(data);
+       
+         
+            var fullstats = document.querySelector("#fullstats");
+            fullstats.innerHTML = `<pre>${JSON.stringify(data["stats"], null, 2).replaceAll("minecraft:", "").replaceAll("\"", "")}</pre>`;
+        }
+
+        getData();
+    </script>
+</html>
