@@ -52,11 +52,14 @@ app.get("/api/stats", (req, res) => {
           if (usercache[i]["uuid"] == uuid) { username = usercache[i]["name"]; }
         }
 
-        // skip over admins/bots
+        // skip over admins/bots + Gibson's alts lmao
         // also fun fact for future john, over here Zooto is Abdullah, not Deivik he joined with a similar name to Deivik lmao
-        if (username == "john" || username == "Zooto7698" || username == "Kitty") return;
+        if (username == "john" || username == "Zooto7698" || username == "Kitty" || username == "meowdaddy1234") return;
     
         var data = JSON.parse(fs.readFileSync(`${serverDir}/world/players/stats/${f}`));
+
+        //console.log(username);
+        //console.log(uuid);
 
         // now get data
         var deaths = 0;
@@ -111,6 +114,7 @@ app.get("/api/stats", (req, res) => {
             "jumps jumped": Number(jumps).toLocaleString(),
             "sleeps": Number(sleeps).toLocaleString(),
             "items picked up": Number(totalPickedUp).toLocaleString(),
+         //   "uuid": uuid,
         }); 
     });    
 
