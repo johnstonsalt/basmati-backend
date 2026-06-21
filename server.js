@@ -49,19 +49,21 @@ app.get("/api/stats", (req, res) => {
           if (usercache[i]["uuid"] == uuid) { username = usercache[i]["name"]; }
         }
 
+        // skip over admins/bots
+        // also fun fact for future john, over here Zooto is Abdullah, not Deivik he joined with a similar name to Deivik lmao
+        if (username == "john" || username == "Zooto7698" || username == "Kitty") return;
+    
         var data = JSON.parse(fs.readFileSync(`${serverDir}/world/players/stats/${f}`));
 
-        // deaths
+        // now get data
         var deaths = 0;
         deaths = data["stats"]["minecraft:custom"]["minecraft:deaths"];
         if (!deaths) deaths = 0;
 
-        // playtime
         var playtime = 0;
         playtime = data["stats"]["minecraft:custom"]["minecraft:play_time"] / 20 / 60 / 60;
         playtime = Math.round(playtime * 10) / 10;
 
-        // distance travelled
         var distance = 0;
         distance = data["stats"]["minecraft:custom"]["minecraft:walk_one_cm"] / 100;
         distance = Math.round(distance);
