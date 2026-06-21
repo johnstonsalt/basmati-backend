@@ -27,14 +27,14 @@
                 ipdiv.innerText = ip;
 
                 // mc data
-                var mcres = await fetch(`http://${ip}:3000/players`, { cache: "no-store" });
+                var mcres = await fetch(`/players`, { cache: "no-store" });
                 var mcdata = await mcres.json();
 
                 var countdiv = document.querySelector("#countdiv");
                 var listdiv = document.querySelector("#listdiv");
 
                 if (mcdata["error"]) {
-                    countdiv.innerHTML = "<b style='color: #e03731;'>server is either offline, or IP needs to update</b><br />call John if server is on, and IP doesn't update within 5 minutes!";
+                    countdiv.innerHTML = "<b style='color: #e03731;'>server is offline :(</b>";
                 } else {
                     countdiv.innerText = `there are ${mcdata["players"]["online"]} players online:`;
 
