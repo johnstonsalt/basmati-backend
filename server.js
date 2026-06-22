@@ -10,23 +10,27 @@ const port = 3000;
 app.use(cors());
 app.use(nocache());
 
+// basic
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
-
 app.get("/style.css", (req, res) => {
     res.sendFile(path.join(__dirname, "style.css"));
 });
 
-app.get("/ok", (req, res) => { res.send("ok"); });
+app.use((req, res, next) => {
+    if (!(req.ip.startsWith("192.168") || req.url == "/favicon.ico"))
+        console.log(`${new Date().toLocaleString().split(", ")[1]} - request to '${req.url}' from   ${req.ip}`);
+    next();
+});
 
+// players
 const mcsip = "127.0.0.1"
 const mcsport = 25565
 const serverDir = "/home/john/basmati";
 const usercache = JSON.parse(fs.readFileSync(`${serverDir}/usercache.json`, "utf8"));
 
 app.get("/api/players", (req, res) => {
-    console.log(`request to '/api/players' from ${req.ip}`)
     mcp.ping({ mcsip, mcsport }, (err, mcres) => {
         if (err) { return res.json({"error": "server down" }); }
 
@@ -40,8 +44,6 @@ app.get("/stats", (req, res) => {
     res.sendFile(path.join(__dirname, "stats.html"));
 });
 app.get("/api/stats", (req, res) => {
-    console.log(`request to 'api/stats' from ${req.ip}`);
-
     var retval = [];
     fs.readdirSync(`${serverDir}/world/players/stats/`).forEach((f) => {
         // username lookup
@@ -123,12 +125,9 @@ app.get("/api/stats", (req, res) => {
 
 // full stats
 app.get("/fullstats/:username", (req, res) => {
-    console.log(`request to 'fullstats/${req.params.username}' from ${req.ip}`);
     res.sendFile(path.join(__dirname, "fullstats.html"));
 });
 app.get("/api/fullstats/:username", (req, res) => {
-    console.log(`request to 'api/fullstats/${req.params.username}' from ${req.ip}`);
-
     var username = String(req.params.username).toLocaleLowerCase();
     var uuid;
 
@@ -142,6 +141,11 @@ app.get("/api/fullstats/:username", (req, res) => {
     var fpath = `${serverDir}/world/players/stats/${uuid}.json`; 
     var data = JSON.parse(fs.readFileSync(fpath, "utf8"));
     res.json(data); 
+});
+
+// peaceful
+app.get("/peaceful", (req, res) => {
+    res.sendFile(path.join(__dirname, "peaceful.html"));
 });
 
 app.listen(port, "0.0.0.0", () => {
