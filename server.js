@@ -4,9 +4,20 @@ const nocache = require("nocache");
 const mcp = require("minecraft-protocol");
 const path = require("path");
 const fs = require("fs");
+const helmet = require("helmet");
 const app = express();
 const port = 3000;
 
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            upgradeInsecureRequests: null,
+        },
+    }
+}));
 app.use(cors());
 app.use(nocache());
 
